@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSorter - Klasifikasi Sampah</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- AOS Animate On Scroll -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <!-- Font Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Poppins';
+            background-color: #f5f9fc;
+            color: #333;
+            padding-top: 80px;
+            position: relative;
+        }
+        
+        /* Navbar Styling */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar-brand span {
+            color: var(--secondary-color);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.9), rgba(39, 174, 96, 0.9)), 
+                        url('/api/placeholder/1200/800') center/cover no-repeat;
+            color: white;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Upload Card */
+        .upload-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .upload-title {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        /* Preview Image */
+        .preview-container {
+            position: relative;
+            margin: 1.5rem auto;
+            max-width: 400px;
+            display: none;
+        }
+        
+        #preview {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Classification Button */
+        .classify-btn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .classify-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .classify-btn:active {
+            transform: translateY(0px);
+        }
+        
+        .classify-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .classify-btn .spinner-border {
+            display: none;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        
+        /* Result Card */
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .result-title {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .result-body {
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .result-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .result-icon.organic {
+            color: #27ae60;
+        }
+        
+        .result-icon.anorganic {
+            color: #3498db;
+        }
+        
+        .result-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-confidence {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+        
+        .result-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            text-align: left;
+        }
+        
+        .result-info h5 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-info p {
+            margin-bottom: 0.5rem;
+            color: #636e72;
+        }
+        
+        /* Waste Types Info */
+        
+        .waste-info {
+            background: linear-gradient(135deg, #e0f7fa, #f1f8e9); /* gradasi lembut hijau-biru */
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
+            color: #333;
+        }
+
+        .waste-info h3 {
+            color: #2e7d32;
+            font-weight: 700;
+            font-size: 1.75rem;
+            border-bottom: 2px solid #aed581;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .waste-info p {
+            font-size: 1.05rem;
+            line-height: 1.75;
+            margin-bottom: 1rem;
+        }
+
+        
+        .waste-card {
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .waste-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .organic-card {
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .anorganic-card {
+            border-left: 5px solid #3498db;
+        }
+
+
+        /* DIY Projects Styling */
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        /* Decomposition Time Styling */
+        .decomposition-item {
+            margin-bottom: 10px;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 20px;
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            font-weight: normal;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        /* Modal Styling for DIY Tutorials */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: none;
+            padding: 1.5rem 1.5rem 0.5rem;
+        }
+
+        .modal-body {
+            padding: 1rem 1.5rem;
+        }
+
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .diy-step {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #e9e9e9;
+        }
+
+        .diy-step:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+  
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        
+        .footer-text {
+            opacity: 0.8;
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading-spinner .spinner-grow {
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--primary-color);
+        }
+        
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 2rem 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .upload-area {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Animated background */
+        .particles-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(46, 204, 113, 0.2);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles Background -->
+    <div class="particles-background" id="particles-background"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-recycle me-2"></i>
+                Eco<span>Sorter</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">Tentang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#info">Info Sampah</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#diy-projects">DIY Project</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#decomposition">Waktu Penguraian</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="hero" data-aos="fade-up">
+                    <h1>Klasifikasi Sampah dengan Kecerdasan Buatan</h1>
+                    <p>Unggah foto sampah dan sistem kami akan mengklasifikasikannya sebagai organik atau anorganik menggunakan metode CNN</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Upload Section -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="upload-card">
+                    <h3 class="upload-title">Unggah Gambar Sampah</h3>
+                    
+                    <div class="upload-area" id="upload-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h5 class="upload-text">Seret & Lepas atau Klik untuk Unggah</h5>
+                        <p class="text-muted">Format yang didukung: JPG, PNG, JPEG</p>
+                        <input type="file" id="imageInput" accept="image/*">
+                    </div>
+                    
+                    <div class="preview-container" id="preview-container">
+                        <img id="preview" src="" alt="Preview Gambar">
+                        <div class="preview-close" id="preview-close">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="classify-btn" id="classify-btn" onclick="uploadImage()">
+                            <i class="fas fa-search"></i>
+                            <span>Klasifikasikan</span>
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="loading-spinner" id="loading-spinner">
+                        <div class="spinner-grow" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Menganalisis gambar...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Result Section -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="result-card" id="result-card">
+                    <h3 class="result-title">Hasil Klasifikasi</h3>
+                    <div class="result-body" id="result-body">
+                        <!-- Content will be added by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- About Section -->
+                <div class="waste-info" id="about" data-aos="fade-up" data-aos-delay="300">
+                    <h3 class="mb-4">Tentang Aplikasi</h3>
+                    <p>EcoSorter adalah sebuah aplikasi pemilah sampah yang menggunakan teknologi kecerdasan buatan (AI) dengan metode Convolutional Neural Network (CNN) untuk mengklasifikasikan sampah menjadi organik dan anorganik.</p>
+                    <p>Aplikasi ini dikembangkan untuk membantu masyarakat dalam memilah sampah dengan benar, sehingga dapat mendukung program pengelolaan sampah yang lebih efektif dan ramah lingkungan.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Waste Information Section -->
+        <div class="row mt-4" id="info">
+            <div class="col-12">
+                <h3 class="mb-4 text-center" data-aos="fade-up">Informasi Jenis Sampah</h3>
+            </div>
+            
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="waste-card organic-card">
+                    <h4><i class="fas fa-seedling me-2"></i> Sampah Organik</h4>
+                    <p>Sampah organik adalah sampah yang berasal dari makhluk hidup dan dapat terurai secara alami oleh mikroorganisme.</p>
+                    <p><strong>Contoh:</strong></p>
+                    <ul>
+                        <li>Sisa makanan</li>
+                        <li>Daun-daunan</li>
+                        <li>Sayuran busuk</li>
+                        <li>Buah-buahan busuk</li>
+                        <li>Kertas (tanpa tinta)</li>
+                    </ul>
+                    <p><strong>Penanganan:</strong> Sampah organik dapat didaur ulang menjadi kompos yang dapat digunakan sebagai pupuk tanaman.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="waste-card anorganic-card">
+                    <h4><i class="fas fa-trash-alt me-2"></i> Sampah Anorganik</h4>
+                    <p>Sampah anorganik adalah sampah yang tidak dapat terurai secara alami oleh mikroorganisme dan membutuhkan waktu yang sangat lama untuk terurai.</p>
+                    <p><strong>Contoh:</strong></p>
+                    <ul>
+                        <li>Plastik</li>
+                        <li>Kaleng</li>
+                        <li>Kaca</li>
+                        <li>Styrofoam</li>
+                        <li>Baterai</li>
+                    </ul>
+                    <p><strong>Penanganan:</strong> Sampah anorganik sebaiknya dipisahkan dan didaur ulang di tempat pengolahan sampah khusus.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIY Projects Section -->
+        <div class="container mt-5" id="diy-projects">
+            <div class="text-center">
+                <h3 class="mb-3" data-aos="fade-up">Produk DIY dari Sampah Anorganik</h3>
+                <p class="mb-4" data-aos="fade-up">Buat kreasi unik dari sampah anorganik dengan ide-ide DIY berikut:</p>
+            </div>
+        
+            <div id="diyCarousel" class="carousel slide" data-bs-ride="carousel" data-aos="fade-up">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <!-- Card 1 -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-wine-bottle me-2 text-primary"></i>Pot Bunga dari Botol Plastik</h5>
+                                        <p class="card-text">Ubah botol plastik bekas menjadi pot bunga yang unik dan ramah lingkungan.</p>
+                                        <button class="btn btn-sm btn-outline-success" onclick="showDIYTutorial('pot-bunga')">Lihat Tutorial</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-pen me-2 text-danger"></i>Tempat Pensil dari Kaleng</h5>
+                                        <p class="card-text">Daur ulang kaleng bekas menjadi tempat pensil yang stylish.</p>
+                                        <button class="btn btn-sm btn-outline-success" onclick="showDIYTutorial('tempat-pensil')">Lihat Tutorial</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fa-solid fa-bag-shopping me-2 text-purple"></i>Tas dari Kemasan Plastik</h5>
+                                        <p class="card-text">Buat tas unik dari sachet kopi atau kemasan deterjen bekas.</p>
+                                        <button class="btn btn-sm btn-outline-success" onclick="showDIYTutorial('tas-plastik')">Lihat Tutorial</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Slide 2 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <!-- Card 4 -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-lightbulb me-2 text-warning"></i>Lampu Hias dari CD Bekas</h5>
+                                        <p class="card-text">Gunakan CD bekas untuk membuat lampu hias yang memantulkan cahaya indah.</p>
+                                        <button class="btn btn-sm btn-outline-success" onclick="showDIYTutorial('lampu-cd')">Lihat Tutorial</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 5 -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-box me-2 text-secondary"></i>Rak Mini dari Kardus</h5>
+                                        <p class="card-text">Kardus bekas bisa dijadikan rak serbaguna yang praktis dan hemat biaya.</p>
+                                        <button class="btn btn-sm btn-outline-success" onclick="showDIYTutorial('rak-kardus')">Lihat Tutorial</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 6 -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i class="fas fa-gift me-2 text-pink"></i>Kotak Kado dari Koran Bekas</h5>
+                                        <p class="card-text">Koran bekas bisa disulap menjadi pembungkus kado yang unik dan vintage.</p>
+                                        <button class="btn btn-sm btn-outline-success" onclick="showDIYTutorial('kado-koran')">Lihat Tutorial</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Carousel controls -->
+                <div class="d-flex justify-content-center mt-3 ">
+                    <button class="carousel-control-prev position-static" type="button" data-bs-target="#diyCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-success rounded"></span>
+                    </button>
+                    <button class="carousel-control-next position-static" type="button" data-bs-target="#diyCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-success rounded"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+
+
+        <!-- DIY Tutorial Modal -->
+        <div class="modal fade" id="diyTutorialModal" tabindex="-1" aria-labelledby="diyTutorialModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="diyTutorialModalLabel">Tutorial DIY</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="diyTutorialContent">
+                        <!-- Content will be loaded by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Decomposition Time Section -->
+        <div class="row mt-5" id="decomposition">
+            <div class="col-12">
+                <h3 class="mb-4 text-center" data-aos="fade-up">Waktu Penguraian Sampah</h3>
+                <p class="text-center mb-4" data-aos="fade-up">Ketahui berapa lama sampah-sampah ini terurai di alam:</p>
+            </div>
+            
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card">
+                    <div class="card-header bg-success text-white text-center">
+                        <h5 class="mb-0"><i class="fas fa-seedling me-2"></i>Sampah Organik</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-apple-alt me-2"></i>Sisa Buah dan Sayur</span>
+                                <span class="badge bg-success">2-5 minggu</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 5%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-drumstick-bite me-2"></i>Sisa Makanan</span>
+                                <span class="badge bg-success">1-2 bulan</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 8%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-leaf me-2"></i>Daun dan Rumput</span>
+                                <span class="badge bg-success">1-3 bulan</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 10%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-scroll me-2"></i>Kertas</span>
+                                <span class="badge bg-success">2-5 bulan</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 15%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-box me-2"></i>Kardus</span>
+                                <span class="badge bg-success">2 bulan</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 12%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h5 class="mb-0"><i class="fas fa-trash-alt me-2"></i>Sampah Anorganik</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-shopping-bag me-2"></i>Kantong Plastik</span>
+                                <span class="badge bg-danger">10-20 tahun</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 40%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-wine-bottle me-2"></i>Botol Plastik</span>
+                                <span class="badge bg-danger">450 tahun</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-glass-martini-alt me-2"></i>Kaca</span>
+                                <span class="badge bg-danger">1 juta tahun</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-battery-full me-2"></i>Baterai</span>
+                                <span class="badge bg-danger">100 tahun</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="decomposition-item">
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fas fa-coffee me-2"></i>Styrofoam</span>
+                                <span class="badge bg-danger">500+ tahun</span>
+                            </div>
+                            <div class="progress mt-1 mb-3">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="footer-text">&copy; 2025 EcoSorter - Klasifikasi Sampah dengan AI</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles-background');
+            const particlesCount = 20;
+            
+            for (let i = 0; i < particlesCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random size
+                const size = Math.random() * 50 + 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100 + 100;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                
+                // Random animation duration
+                const duration = Math.random() * 30 + 10;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                const delay = Math.random() * 5;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Call the function when the page loads
+        window.addEventListener('load', createParticles);
+        
+        // Preview image functionality
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview-container').style.display = 'block';
+                    document.getElementById('upload-area').style.borderColor = 'var(--primary-color)';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Close preview
+        document.getElementById('preview-close').addEventListener('click', function() {
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('imageInput').value = '';
+            document.getElementById('upload-area').style.borderColor = '#ccc';
+        });
+        
+        // Upload functionality
+        function uploadImage() {
+            const fileInput = document.getElementById('imageInput');
+            const classifyBtn = document.getElementById('classify-btn');
+            const spinner = document.querySelector('.spinner-border');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const resultCard = document.getElementById('result-card');
+            const resultBody = document.getElementById('result-body');
+            
+            if (fileInput.files.length === 0) {
+                showNotification('Silakan pilih gambar terlebih dahulu.', 'warning');
+                return;
+            }
+            
+            // Show loading state
+            classifyBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            loadingSpinner.style.display = 'block';
+            resultCard.style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            
+            // Simulate fetch delay for demonstration
+            setTimeout(() => {
+                fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading state
+                    classifyBtn.disabled = false;
+                    spinner.style.display = 'none';
+                    loadingSpinner.style.display = 'none';
+                    
+                    // Show result
+                    resultCard.style.display = 'block';
+                    showResult(data.prediction, data.confidence);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    // Hide loading state
+                    classifyBtn.disabled = false;
+                    spinner.style.display = 'none';
+                    loadingSpinner.style.display = 'none';
+                    
+                    // Show error
+                    showNotification("Terjadi kesalahan! Silakan coba lagi.", "danger");
+                });
+            }, 1500); // Simulating a delay for demonstration
+        }
+        
+        // Show result function
+        function showResult(prediction, confidence) {
+            const resultBody = document.getElementById('result-body');
+            const isOrganic = prediction.toLowerCase().includes('organik') && !prediction.toLowerCase().includes('anorganik');
+            
+            let tipText = '';
+            let iconClass = '';
+            
+            if (isOrganic) {
+                iconClass = 'fas fa-seedling result-icon organic';
+                tipText = 'Sampah organik dapat didaur ulang menjadi kompos yang bermanfaat untuk tanaman. Buatlah lubang kompos di halaman belakang rumah Anda untuk mengolah sampah organik.';
+            } else {
+                iconClass = 'fas fa-trash-alt result-icon anorganic';
+                tipText = 'Sampah anorganik sebaiknya dibuang ke tempat pengolahan sampah khusus. Beberapa jenis sampah anorganik seperti plastik dan kaleng dapat didaur ulang.';
+            }
+
+            // Tentukan kelas warna berdasarkan tingkat keyakinan
+            let confidenceColor = '';
+            if (confidence >= 75) {
+                confidenceColor = 'text-success'; // hijau
+            } else if (confidence >= 60) {
+                confidenceColor = 'text-warning'; // kuning
+            } else {
+                confidenceColor = 'text-danger'; // merah
+            }
+
+            resultBody.innerHTML = `
+                <div class="text-center">
+                    <i class="${iconClass}"></i>
+                    <div class="result-text">${prediction}</div>
+                    <div class="result-confidence ${confidenceColor}">Tingkat Keyakinan: ${confidence.toFixed(2)}%</div>
+                </div>
+                
+                <div class="result-info mt-3 p-3 bg-light border rounded">
+                    <h5><i class="fas fa-lightbulb text-info"></i> Tips Penanganan:</h5>
+                    <p>${tipText}</p>
+                </div>
+            `;
+        }
+        
+        // Notification function (optional - for enhanced user experience)
+        function showNotification(message, type) {
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+            notificationDiv.setAttribute('role', 'alert');
+            notificationDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(notificationDiv);
+            
+            // Auto-dismiss after 3 seconds
+            setTimeout(() => {
+                notificationDiv.classList.remove('show');
+                setTimeout(() => {
+                    notificationDiv.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('upload-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.style.borderColor = 'var(--primary-color)';
+            uploadArea.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+        }
+        
+        function unhighlight() {
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.backgroundColor = 'transparent';
+        }
+        
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files && files.length) {
+                document.getElementById('imageInput').files = files;
+                const file = files[0];
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview-container').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Show DIY tutorial modal
+        function showDIYTutorial(tutorialId) {
+            const modalTitle = document.getElementById('diyTutorialModalLabel');
+            const modalContent = document.getElementById('diyTutorialContent');
+            
+            let tutorialTitle = '';
+            let tutorialContent = '';
+            
+            switch (tutorialId) {
+                case 'pot-bunga':
+                    tutorialTitle = 'Tutorial Membuat Pot Bunga dari Botol Plastik';
+                    tutorialContent = `
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">1</span>
+                                <h5 class="mb-0">Persiapkan botol plastik bekas</h5>
+                            </div>
+                            <p>Bersihkan botol plastik bekas dan pastikan dalam keadaan kering. Lepaskan label jika ada.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">2</span>
+                                <h5 class="mb-0">Potong botol menjadi dua bagian</h5>
+                            </div>
+                            <p>Gunakan gunting atau cutter untuk memotong botol menjadi dua bagian. Anda bisa membuat potongan lurus atau bergelombang untuk tampilan yang lebih menarik.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">3</span>
+                                <h5 class="mb-0">Cat permukaan botol</h5>
+                            </div>
+                            <p>Gunakan cat akrilik atau cat semprot untuk mengecat permukaan luar botol. Biarkan mengering selama beberapa jam.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">4</span>
+                                <h5 class="mb-0">Buat lubang drainase</h5>
+                            </div>
+                            <p>Lubangi bagian bawah pot untuk drainase air menggunakan alat pemanas seperti paku panas atau obeng yang dipanaskan.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">5</span>
+                                <h5 class="mb-0">Isi dengan tanah dan tanaman</h5>
+                            </div>
+                            <p>Isi pot dengan tanah dan tanaman pilihan Anda. Pot bunga daur ulang Anda siap digunakan!</p>
+                        </div>
+                        
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-leaf me-2"></i> <strong>Tip:</strong> Anda bisa membuat pot gantung dengan menambahkan tali pada sisi pot.
+                        </div>
+                    `;
+                    break;
+                    
+                case 'tempat-pensil':
+                    tutorialTitle = 'Tutorial Membuat Tempat Pensil dari Kaleng Bekas';
+                    tutorialContent = `
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">1</span>
+                                <h5 class="mb-0">Persiapkan kaleng bekas</h5>
+                            </div>
+                            <p>Bersihkan kaleng bekas dan pastikan tidak ada bagian tajam di sekitar pinggiran kaleng.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">2</span>
+                                <h5 class="mb-0">Ukur kertas atau kain</h5>
+                            </div>
+                            <p>Potong kertas berwarna atau kain sesuai dengan ukuran kaleng, dengan sedikit tambahan untuk bagian atas dan bawah.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">3</span>
+                                <h5 class="mb-0">Tempelkan kertas atau kain</h5>
+                            </div>
+                            <p>Oleskan lem pada permukaan kaleng dan tempelkan kertas atau kain dengan rapi. Pastikan tidak ada gelembung udara.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">4</span>
+                                <h5 class="mb-0">Tambahkan hiasan</h5>
+                            </div>
+                            <p>Tambahkan hiasan seperti pita, kancing, atau stiker sesuai keinginan untuk membuat tempat pensil terlihat lebih menarik.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">5</span>
+                                <h5 class="mb-0">Selesaikan dengan lapisan pelindung</h5>
+                            </div>
+                            <p>Oleskan lapisan lem putih yang tipis atau vernis untuk melindungi permukaan kertas atau kain.</p>
+                        </div>
+                        
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-pencil-alt me-2"></i> <strong>Tip:</strong> Anda bisa menambahkan pembatas di dalam kaleng menggunakan karton tebal untuk memisahkan alat tulis.
+                        </div>
+                    `;
+                    break;
+                    
+                case 'tas-plastik':
+                    tutorialTitle = 'Tutorial Membuat Tas dari Kemasan Plastik';
+                    tutorialContent = `
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">1</span>
+                                <h5 class="mb-0">Kumpulkan kemasan plastik</h5>
+                            </div>
+                            <p>Kumpulkan kemasan plastik bekas seperti sachet kopi, deterjen, atau minuman. Bersihkan dan keringkan.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">2</span>
+                                <h5 class="mb-0">Potong kemasan menjadi bentuk yang sama</h5>
+                            </div>
+                            <p>Potong semua kemasan menjadi bentuk persegi panjang dengan ukuran yang sama.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">3</span>
+                                <h5 class="mb-0">Anyam potongan kemasan</h5>
+                            </div>
+                            <p>Anyam potongan-potongan kemasan plastik seperti membuat tikar. Pastikan anyaman cukup rapat agar tas kuat.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">4</span>
+                                <h5 class="mb-0">Jahit tepi anyaman</h5>
+                            </div>
+                            <p>Setelah anyaman selesai, lipat menjadi bentuk tas dan jahit bagian tepi dan bawah menggunakan jarum dan benang yang kuat.</p>
+                        </div>
+                        
+                        <div class="diy-step">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="step-number">5</span>
+                                <h5 class="mb-0">Buat dan pasang tali tas</h5>
+                            </div>
+                            <p>Buat tali tas dengan menganyam potongan kemasan memanjang atau menggunakan tali lain yang kuat. Pasang pada tas.</p>
+                        </div>
+                        
+                        <div class="alert alert-success mt-3">
+                            <i class="fas fa-recycle me-2"></i> <strong>Tip:</strong> Untuk memperkuat tas, Anda bisa melapisi bagian dalam dengan kain bekas atau memberi lapisan resin agar tahan air.
+                        </div>
+                    `;
+                    break;
+                    case 'lampu-cd':
+                        tutorialTitle = 'Tutorial Membuat Lampu Hias dari CD Bekas';
+                        tutorialContent = `
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">1</span>
+                                    <h5 class="mb-0">Siapkan potongan CD</h5>
+                                </div>
+                                <p>Potong CD bekas menjadi beberapa bagian kecil dengan bentuk tidak beraturan menggunakan gunting atau cutter.</p>
+                            </div>
+                            
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">2</span>
+                                    <h5 class="mb-0">Tempelkan potongan CD</h5>
+                                </div>
+                                <p>Tempelkan potongan CD di bagian luar wadah lampu menggunakan lem tembak, susun menyerupai mozaik.</p>
+                            </div>
+                            
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">3</span>
+                                    <h5 class="mb-0">Pasang lampu LED</h5>
+                                </div>
+                                <p>Letakkan lampu LED kecil di dalam wadah agar cahaya dapat dipantulkan oleh permukaan CD.</p>
+                            </div>
+                            
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">4</span>
+                                    <h5 class="mb-0">Tambahkan tali gantungan</h5>
+                                </div>
+                                <p>Gunakan tali nilon atau benang kuat untuk membuat gantungan dan pasang di atas lampu.</p>
+                            </div>
+
+                            <div class="alert alert-success mt-3">
+                                <i class="fas fa-lightbulb me-2"></i> <strong>Tip:</strong> Gunakan lampu LED berwarna untuk efek visual yang lebih menarik di malam hari!
+                            </div>
+                        `;
+                        break;
+
+                    case 'rak-kardus':
+                        tutorialTitle = 'Tutorial Membuat Rak Mini dari Kardus Bekas';
+                        tutorialContent = `
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">1</span>
+                                    <h5 class="mb-0">Rancang pola rak</h5>
+                                </div>
+                                <p>Gambar desain rak mini di permukaan kardus dengan penggaris dan pensil, sesuaikan dengan kebutuhan penyimpanan.</p>
+                            </div>
+
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">2</span>
+                                    <h5 class="mb-0">Potong dan bentuk bagian rak</h5>
+                                </div>
+                                <p>Potong kardus sesuai pola, kemudian bentuk menjadi sisi dan sekat rak.</p>
+                            </div>
+
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">3</span>
+                                    <h5 class="mb-0">Gabungkan semua bagian</h5>
+                                </div>
+                                <p>Tempelkan bagian-bagian rak menggunakan lem tembak atau selotip kertas yang kuat.</p>
+                            </div>
+
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">4</span>
+                                    <h5 class="mb-0">Hias permukaan rak</h5>
+                                </div>
+                                <p>Tutup permukaan rak dengan kertas warna-warni, kertas kado, atau gambar daur ulang agar tampilannya menarik.</p>
+                            </div>
+
+                            <div class="alert alert-success mt-3">
+                                <i class="fas fa-box-open me-2"></i> <strong>Tip:</strong> Tambahkan lapisan karton ganda untuk memperkuat rak agar mampu menahan beban lebih berat.
+                            </div>
+                        `;
+                        break;
+
+                    case 'kado-koran':
+                        tutorialTitle = 'Tutorial Membuat Kotak Kado dari Koran Bekas';
+                        tutorialContent = `
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">1</span>
+                                    <h5 class="mb-0">Lipat dasar kotak</h5>
+                                </div>
+                                <p>Ambil beberapa lembar koran, lipat menjadi persegi lalu bentuk dasar kotak seperti membuat origami.</p>
+                            </div>
+
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">2</span>
+                                    <h5 class="mb-0">Perkuat dengan karton tipis</h5>
+                                </div>
+                                <p>Untuk bagian bawah kotak, beri alas tambahan dari kardus tipis agar lebih kuat dan tidak mudah rusak.</p>
+                            </div>
+
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">3</span>
+                                    <h5 class="mb-0">Bentuk penutup kotak</h5>
+                                </div>
+                                <p>Buat tutup kotak dengan teknik yang sama, namun ukuran sedikit lebih besar agar bisa menutup bagian bawah.</p>
+                            </div>
+
+                            <div class="diy-step">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="step-number">4</span>
+                                    <h5 class="mb-0">Hias dengan pita atau tali</h5>
+                                </div>
+                                <p>Ikatkan pita daur ulang atau tali rami di sekeliling kotak agar terlihat lebih menarik dan siap diberikan sebagai kado.</p>
+                            </div>
+
+                            <div class="alert alert-success mt-3">
+                                <i class="fas fa-gift me-2"></i> <strong>Tip:</strong> Tambahkan kartu ucapan buatan tangan dari kertas bekas untuk sentuhan personal yang ramah lingkungan.
+                            </div>
+                        `;
+                        break;
+
+
+            }
+            
+            modalTitle.textContent = tutorialTitle;
+            modalContent.innerHTML = tutorialContent;
+            
+            // Show the modal
+            const diyModal = new bootstrap.Modal(document.getElementById('diyTutorialModal'));
+            diyModal.show();
+        }
+
+        // Update Result function to include DIY recommendations
+        // Tambahkan Rekomendasi DIY untuk sampah anorganik
+        const originalShowResult = showResult;
+        showResult = function(prediction, confidence) {
+            originalShowResult(prediction, confidence);
+
+            const resultBody = document.getElementById('result-body');
+            const isAnorganic = prediction.toLowerCase().includes('anorganik');
+
+            if (isAnorganic) {
+                const diyRecommendation = document.createElement('div');
+                diyRecommendation.className = 'result-info mt-3 p-3 bg-white border rounded shadow-sm';
+                diyRecommendation.innerHTML = `
+                    <h5><i class="fas fa-tools text-primary"></i> Rekomendasi DIY:</h5>
+                    <p>Daripada dibuang, sampah anorganik ini bisa didaur ulang menjadi produk DIY yang bermanfaat!</p>
+                    <a href="#diy-projects" class="btn btn-sm btn-outline-primary">Lihat Ide DIY</a>
+                `;
+                resultBody.appendChild(diyRecommendation);
+            }
+        };
+
+
+    </script>
+</body>
+</html>
